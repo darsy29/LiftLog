@@ -1,8 +1,29 @@
-[
-  { "id": "seed-1", "place": "Library, third floor", "description": "Chairs rearranged overnight, every time. The night guard says he locks the room himself.", "spookiness": 3, "reported_at": "2026-08-01T14:20:00.000Z" },
-  { "id": "seed-2", "place": "Old gym", "description": "Lights flicker in a fixed pattern after 9pm, always three short and one long.", "spookiness": 4, "reported_at": "2026-08-03T11:05:00.000Z" },
-  { "id": "seed-3", "place": "Parking basement", "description": "Footsteps with no one there. Reported separately by three different people in one week, which is what makes this one hard to dismiss. Two of them were alone at the time and did not know about the others. This entry is deliberately long, because a seed row of four words hides every text-wrapping bug you have.", "spookiness": 5, "reported_at": "2026-08-05T22:40:00.000Z" },
-  { "id": "seed-4", "place": "Canteen", "description": "A cold spot near the back door, every morning before seven.", "spookiness": 1, "reported_at": "2026-08-06T07:15:00.000Z" },
-  { "id": "seed-5", "place": "AB Building stairwell", "description": "", "spookiness": 2, "reported_at": "2026-08-08T18:30:00.000Z" },
-  { "id": "seed-6", "place": "Chapel garden", "description": "Someone humming. Stops the moment you turn around.", "spookiness": 3, "reported_at": "2026-08-10T05:50:00.000Z" }
-]
+{
+  "exercises": [
+    { "id": 1, "name": "Barbell Back Squat", "muscle_group": "Legs", "exercise_type": "compound", "region": "lower" },
+    { "id": 2, "name": "Deadlift", "muscle_group": "Legs", "exercise_type": "compound", "region": "lower" },
+    { "id": 3, "name": "Leg Press", "muscle_group": "Legs", "exercise_type": "compound", "region": "lower" },
+    { "id": 4, "name": "Bench Press", "muscle_group": "Chest", "exercise_type": "compound", "region": "upper" },
+    { "id": 5, "name": "Overhead Press", "muscle_group": "Shoulders", "exercise_type": "compound", "region": "upper" },
+    { "id": 6, "name": "Lateral Raise", "muscle_group": "Shoulders", "exercise_type": "isolation", "region": "upper" },
+    { "id": 7, "name": "Barbell Row", "muscle_group": "Back", "exercise_type": "compound", "region": "upper" },
+    { "id": 8, "name": "Lat Pulldown", "muscle_group": "Back", "exercise_type": "compound", "region": "upper" },
+    { "id": 9, "name": "Bicep Curl", "muscle_group": "Arms", "exercise_type": "isolation", "region": "upper" },
+    { "id": 10, "name": "Tricep Pushdown", "muscle_group": "Arms", "exercise_type": "isolation", "region": "upper" }
+  ],
+  "sets": [
+    { "id": "seed-1", "exercise_id": 1, "weight_kg": 60, "reps": 10, "logged_at": "2026-09-06T10:00:00.000Z" },
+    { "id": "seed-2", "exercise_id": 1, "weight_kg": 60, "reps": 9,  "logged_at": "2026-09-06T10:05:00.000Z" },
+    { "id": "seed-3", "exercise_id": 1, "weight_kg": 60, "reps": 8,  "logged_at": "2026-09-06T10:10:00.000Z" },
+    { "id": "seed-4", "exercise_id": 1, "weight_kg": 60, "reps": 12, "logged_at": "2026-09-11T10:00:00.000Z" },
+    { "id": "seed-5", "exercise_id": 1, "weight_kg": 60, "reps": 11, "logged_at": "2026-09-11T10:05:00.000Z" },
+    { "id": "seed-6", "exercise_id": 1, "weight_kg": 60, "reps": 10, "logged_at": "2026-09-11T10:10:00.000Z" },
+    { "id": "seed-7", "exercise_id": 4, "weight_kg": 40, "reps": 12, "logged_at": "2026-09-09T09:00:00.000Z" },
+    { "id": "seed-8", "exercise_id": 4, "weight_kg": 40, "reps": 12, "logged_at": "2026-09-09T09:05:00.000Z" },
+    { "id": "seed-9", "exercise_id": 4, "weight_kg": 40, "reps": 12, "logged_at": "2026-09-09T09:10:00.000Z" },
+    { "id": "seed-10", "exercise_id": 2, "weight_kg": 80, "reps": 12, "logged_at": "2026-09-13T11:00:00.000Z" },
+    { "id": "seed-11", "exercise_id": 2, "weight_kg": 80, "reps": 12, "logged_at": "2026-09-13T11:05:00.000Z" },
+    { "id": "seed-12", "exercise_id": 2, "weight_kg": 80, "reps": 12, "logged_at": "2026-09-13T11:10:00.000Z" },
+    { "id": "seed-13", "exercise_id": 9, "weight_kg": 10, "reps": 12, "logged_at": "TODAY" }
+  ]
+}

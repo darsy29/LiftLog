@@ -1,168 +1,209 @@
 import { useEffect, useState } from 'react'
-import { listSightings, createSighting, deleteSighting } from './api'
+import {
+  listExercises,
+  listSetsForExercise,
+  listToday,
+  createSet,
+  deleteSet,
+} from './api'
 import DemoNotice from './components/DemoNotice.jsx'
+import Nav from './components/Nav.jsx'
+import Home from './pages/Home.jsx'
+import ChooseExercise from './pages/ChooseExercise.jsx'
+import LogSet from './pages/LogSet.jsx'
+import ExerciseHistory from './pages/ExerciseHistory.jsx'
 
-// A deliberately small working app. Replace all of it with your own project.
+// LiftLog: a free workout log with one smart feature, double progression.
+// Log a set, and the next time you pick that exercise LiftLog tells you
+// whether to add weight or hold, based on whether you hit the top of your
+// rep range on every set last time.
 //
-// What is worth keeping is the SHAPE: four states rather than two, a loading
-// message that admits a free-tier server can be slow to wake, and errors that
-// say something rather than rendering an empty list.
+// Four screens, one piece of state per screen's data, all owned here and
+// passed down as props. See docs/03-design-system.md for the states each
+// screen follows (loading, empty, error, data) and why they are kept
+// distinct rather than collapsed into one "isLoading" flag.
 
-const EMPTY_FORM = { place: '', description: '', spookiness: 3 }
+// A free-tier API sleeps. If a request is taking a while, say so rather than
+// spinning silently, which looks broken.
+function useSlowFlag(status) {
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    if (status !== 'loading') {
+      setSlow(false)
+      return
+    }
+    const timer = setTimeout(() => setSlow(true), 3000)
+    return () => clearTimeout(timer)
+  }, [status])
+  return slow
+}
 
 export default function App() {
-  const [status, setStatus] = useState('loading')   // loading | ready | error
-  const [rows, setRows] = useState([])
-  const [error, setError] = useState(null)
-  const [slow, setSlow] = useState(false)
-  const [form, setForm] = useState(EMPTY_FORM)
+  const [view, setView] = useState('home') // home | choose | log | history
+
+  // Exercises: loaded once, reused by Choose Exercise and to look up names.
+  const [exercises, setExercises] = useState([])
+  const [exercisesStatus, setExercisesStatus] = useState('loading')
+  const [exercisesError, setExercisesError] = useState(null)
+  const exercisesSlow = useSlowFlag(exercisesStatus)
+
+  // Today's sets, for Home.
+  const [today, setToday] = useState([])
+  const [todayStatus, setTodayStatus] = useState('loading')
+  const [todayError, setTodayError] = useState(null)
+  const todaySlow = useSlowFlag(todayStatus)
+
+  // The selected exercise's sets + suggestion, for Log Set and History.
+  const [selectedExerciseId, setSelectedExerciseId] = useState(null)
+  const [detail, setDetail] = useState({ sets: [], suggestion: null })
+  const [detailStatus, setDetailStatus] = useState('loading')
+  const [detailError, setDetailError] = useState(null)
+  const detailSlow = useSlowFlag(detailStatus)
+
   const [saving, setSaving] = useState(false)
 
-  async function load() {
-    setStatus('loading')
-    setError(null)
-
-    // A free-tier API sleeps. If this is taking a while, say so rather than
-    // spinning silently, which looks broken. See page 6.
-    const timer = setTimeout(() => setSlow(true), 3000)
-
+  async function loadExercises() {
+    setExercisesStatus('loading')
+    setExercisesError(null)
     try {
-      setRows(await listSightings())
-      setStatus('ready')
+      setExercises(await listExercises())
+      setExercisesStatus('ready')
     } catch (caught) {
-      setError(caught)
-      setStatus('error')
-    } finally {
-      clearTimeout(timer)
-      setSlow(false)
+      setExercisesError(caught)
+      setExercisesStatus('error')
+    }
+  }
+
+  async function loadToday() {
+    setTodayStatus('loading')
+    setTodayError(null)
+    try {
+      setToday(await listToday())
+      setTodayStatus('ready')
+    } catch (caught) {
+      setTodayError(caught)
+      setTodayStatus('error')
+    }
+  }
+
+  async function loadDetail(exerciseId) {
+    setDetailStatus('loading')
+    setDetailError(null)
+    try {
+      setDetail(await listSetsForExercise(exerciseId))
+      setDetailStatus('ready')
+    } catch (caught) {
+      setDetailError(caught)
+      setDetailStatus('error')
     }
   }
 
   useEffect(() => {
-    load()
+    loadExercises()
+    loadToday()
   }, [])
 
-  async function handleSubmit(event) {
-    event.preventDefault()
-    if (!form.place.trim()) return
+  function goHome() {
+    setView('home')
+    loadToday()
+  }
 
+  function goChoose() {
+    setView('choose')
+  }
+
+  function selectExercise(exerciseId) {
+    setSelectedExerciseId(exerciseId)
+    setView('log')
+    loadDetail(exerciseId)
+  }
+
+  function viewHistory() {
+    setView('history')
+  }
+
+  function logAnother() {
+    setView('log')
+  }
+
+  async function handleCreateSet({ weightKg, reps }) {
     setSaving(true)
     try {
-      const created = await createSighting({
-        place: form.place.trim(),
-        description: form.description.trim(),
-        spookiness: Number(form.spookiness),
-      })
-      setRows([created, ...rows])
-      setForm(EMPTY_FORM)
+      await createSet({ exerciseId: selectedExerciseId, weightKg, reps })
+      await loadDetail(selectedExerciseId)
     } catch (caught) {
-      setError(caught)
+      setDetailError(caught)
     } finally {
       setSaving(false)
     }
   }
 
-  async function handleDelete(id) {
-    const previous = rows
-    setRows(rows.filter((row) => row.id !== id))   // optimistic
+  async function handleDeleteSet(id) {
     try {
-      await deleteSighting(id)
+      await deleteSet(id)
+      await loadDetail(selectedExerciseId)
     } catch (caught) {
-      setRows(previous)                            // put it back on failure
-      setError(caught)
+      setDetailError(caught)
     }
   }
 
+  const selectedExercise = exercises.find(
+    (exercise) => String(exercise.id) === String(selectedExerciseId)
+  )
+
   return (
     <div className="page">
-      <header>
-        <h1>HAUnted Sightings</h1>
-        <p className="lede">
-          Replace this with your own project. This one is here so the template
-          has something that works.
-        </p>
-      </header>
-
+      <Nav view={view} onHome={goHome} onChoose={goChoose} />
       <DemoNotice />
 
-      {error && (
-        <p className="error" role="alert">
-          {error.message} <button onClick={load}>Try again</button>
-        </p>
+      {view === 'home' && (
+        <Home
+          status={todayStatus}
+          slow={todaySlow}
+          error={todayError}
+          today={today}
+          onRetry={loadToday}
+          onChoose={goChoose}
+        />
       )}
 
-      <form onSubmit={handleSubmit} className="card">
-        <h2>Report a sighting</h2>
-
-        <label htmlFor="place">Place</label>
-        <input
-          id="place"
-          value={form.place}
-          onChange={(event) => setForm({ ...form, place: event.target.value })}
-          maxLength={120}
-          required
+      {view === 'choose' && (
+        <ChooseExercise
+          status={exercisesStatus}
+          slow={exercisesSlow}
+          error={exercisesError}
+          exercises={exercises}
+          onRetry={loadExercises}
+          onSelect={selectExercise}
         />
-
-        <label htmlFor="description">What happened</label>
-        <textarea
-          id="description"
-          value={form.description}
-          onChange={(event) => setForm({ ...form, description: event.target.value })}
-          maxLength={2000}
-          rows={3}
-        />
-
-        <label htmlFor="spookiness">Spookiness, 1 to 5</label>
-        <input
-          id="spookiness"
-          type="number"
-          min="1"
-          max="5"
-          value={form.spookiness}
-          onChange={(event) => setForm({ ...form, spookiness: event.target.value })}
-          required
-        />
-
-        <button type="submit" disabled={saving}>
-          {saving ? 'Saving...' : 'Add sighting'}
-        </button>
-      </form>
-
-      {/* Four states. Empty and error are different things and must not look
-          the same: an empty list means "nothing here yet", an error means
-          "we could not find out". */}
-      {status === 'loading' && (
-        <p className="muted">
-          Loading{slow ? '. The server may be waking up, which can take up to a minute.' : '...'}
-        </p>
       )}
 
-      {status === 'ready' && rows.length === 0 && (
-        <p className="muted">No sightings reported yet. Add the first one above.</p>
+      {view === 'log' && (
+        <LogSet
+          exercise={selectedExercise}
+          status={detailStatus}
+          slow={detailSlow}
+          error={detailError}
+          suggestion={detail.suggestion}
+          saving={saving}
+          onRetry={() => loadDetail(selectedExerciseId)}
+          onSubmit={handleCreateSet}
+          onViewHistory={viewHistory}
+        />
       )}
 
-      {status === 'ready' && rows.length > 0 && (
-        <ul className="list">
-          {rows.map((row) => (
-            <li key={row.id} className="card">
-              <div className="row-head">
-                <h3>{row.place}</h3>
-                <span className="spooky" aria-label={`Spookiness ${row.spookiness} of 5`}>
-                  {'*'.repeat(row.spookiness)}
-                </span>
-              </div>
-              {row.description
-                ? <p>{row.description}</p>
-                : <p className="muted">No description given.</p>}
-              <footer>
-                <time dateTime={row.reported_at}>
-                  {new Date(row.reported_at).toLocaleString()}
-                </time>
-                <button onClick={() => handleDelete(row.id)}>Delete</button>
-              </footer>
-            </li>
-          ))}
-        </ul>
+      {view === 'history' && (
+        <ExerciseHistory
+          exercise={selectedExercise}
+          status={detailStatus}
+          slow={detailSlow}
+          error={detailError}
+          sets={detail.sets}
+          suggestion={detail.suggestion}
+          onRetry={() => loadDetail(selectedExerciseId)}
+          onDelete={handleDeleteSet}
+          onLogAnother={logAnother}
+        />
       )}
     </div>
   )
