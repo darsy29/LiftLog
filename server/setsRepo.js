@@ -1,9 +1,3 @@
-// The data-access layer for sets.
-//
-// Every query is parameterised: values go in the array, never into the
-// string. This is what stops "'; DROP TABLE sets; --" in a form field from
-// being a real problem.
-
 export async function getForExercise(pool, exerciseId) {
   const result = await pool.query(
     'SELECT * FROM sets WHERE exercise_id = $1 ORDER BY logged_at DESC',
@@ -25,9 +19,7 @@ export async function getToday(pool) {
 
 export async function create(pool, { exerciseId, weightKg, reps }) {
   const result = await pool.query(
-    `INSERT INTO sets (exercise_id, weight_kg, reps)
-     VALUES ($1, $2, $3)
-     RETURNING *`,
+    `INSERT INTO sets (exercise_id, weight_kg, reps) VALUES ($1, $2, $3) RETURNING *`,
     [exerciseId, weightKg, reps]
   )
   return result.rows[0]

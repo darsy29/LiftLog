@@ -1,24 +1,11 @@
-// The one "smart" feature: double progression.
-//
-// Rule: if every set in your most recent session for an exercise hit the top
-// of the rep range, suggest more weight next time. Otherwise, suggest the
-// same weight and say what is left to hit.
-//
-// This is a plain function with no database in it on purpose, so it can be
-// tested and reasoned about on its own. It is duplicated (in spirit) by
-// client/src/api/mockApi.js, because demo mode has no server to call this
-// from. Keep the two in agreement if you change the rule.
-
-export const REP_TARGET_LOW = 8
 export const REP_TARGET_HIGH = 12
 
-// +2.5kg for lower-body compound lifts (squat, deadlift, leg press), +1kg for
-// everything else (upper body, and any isolation exercise).
 function incrementFor(exercise) {
   return exercise.region === 'lower' && exercise.exercise_type === 'compound' ? 2.5 : 1
 }
 
-// setsForExercise: every logged set for one exercise, any order.
+// Double progression: if every set in the most recent session hit the top of
+// the rep range, suggest more weight next time. Otherwise hold.
 export function suggestNextWeight(exercise, setsForExercise) {
   if (!setsForExercise || setsForExercise.length === 0) {
     return {
