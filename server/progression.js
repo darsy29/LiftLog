@@ -4,8 +4,6 @@ function incrementFor(exercise) {
   return exercise.region === 'lower' && exercise.exercise_type === 'compound' ? 2.5 : 1
 }
 
-// Double progression: if every set in the most recent session hit the top of
-// the rep range, suggest more weight next time. Otherwise hold.
 export function suggestNextWeight(exercise, setsForExercise) {
   if (!setsForExercise || setsForExercise.length === 0) {
     return {

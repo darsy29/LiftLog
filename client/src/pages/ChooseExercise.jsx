@@ -1,7 +1,5 @@
 import ExerciseGroup from '../components/ExerciseGroup.jsx'
 
-// Screen 2 of 4. Exercises grouped by muscle group; picking one moves on to
-// Log Set for that exercise.
 export default function ChooseExercise({ status, slow, error, exercises, onRetry, onSelect }) {
   const groups = exercises.reduce((byGroup, exercise) => {
     const key = exercise.muscle_group

@@ -1,8 +1,3 @@
-/* LiftLog design tokens. CSS custom properties on :root, redefined for dark
-   mode, per docs/03-design-system.md. Module 3 covered the alternatives
-   (Tailwind, styled-components, a UI library); this project uses plain CSS
-   custom properties. */
-
 :root {
   color-scheme: light dark;
   --bg: #fbfbfd;
@@ -10,14 +5,14 @@
   --muted: #5c5c6b;
   --line: #dcdce6;
   --card: #ffffff;
-  --accent: #0d9488;      /* primary: nav, buttons, links */
+  --accent: #0d9488;
   --accent-fg: #ffffff;
 
-  --up-bg: #e6f6ee;       /* suggestion: time to add weight */
+  --up-bg: #e6f6ee;
   --up-line: #2f8f5b;
   --up-fg: #1f6b43;
 
-  --hold-bg: #eef1fb;     /* suggestion: hold the weight */
+  --hold-bg: #eef1fb;
   --hold-line: #8891c7;
   --hold-fg: #3c4374;
 
@@ -66,8 +61,6 @@ h3 { margin: 0; font-size: 1.05rem; }
 .lede, .muted { color: var(--muted); }
 .lede { margin-top: 0; }
 
-/* --- Nav: the one thing on every screen ---------------------------------- */
-
 .nav {
   display: flex;
   align-items: center;
@@ -98,8 +91,6 @@ h3 { margin: 0; font-size: 1.05rem; }
   font-weight: 700;
 }
 
-/* --- Demo notice / errors ------------------------------------------------- */
-
 .demo-notice {
   background: var(--hold-bg);
   border: 1px solid var(--hold-line);
@@ -116,8 +107,6 @@ h3 { margin: 0; font-size: 1.05rem; }
   padding: .75rem 1rem;
 }
 
-/* --- Suggestion banner: the smart feature --------------------------------- */
-
 .suggestion {
   border-radius: .5rem;
   padding: .75rem 1rem;
@@ -128,8 +117,6 @@ h3 { margin: 0; font-size: 1.05rem; }
 .suggestion-up { background: var(--up-bg); border: 1px solid var(--up-line); color: var(--up-fg); }
 .suggestion-hold,
 .suggestion-new { background: var(--hold-bg); border: 1px solid var(--hold-line); color: var(--hold-fg); }
-
-/* --- Cards, lists, forms --------------------------------------------------- */
 
 .card {
   background: var(--card);
@@ -175,6 +162,11 @@ button:disabled { opacity: .6; cursor: default; }
   padding: .65rem .9rem;
 }
 
+.primary-button:hover:not(:disabled) { background: #0b7a70; border-color: #0b7a70; }
+.primary-button:disabled { background: var(--line); border-color: var(--line); color: var(--muted); }
+
+.nav-link:hover:not(.active) { color: var(--fg); background: var(--hold-bg); }
+
 .ghost-button {
   background: transparent;
   color: var(--muted);
@@ -182,8 +174,8 @@ button:disabled { opacity: .6; cursor: default; }
   margin-top: .5rem;
 }
 
-/* Never remove a focus outline without replacing it. Keyboard users need to
-   see where they are. */
+.ghost-button:hover { background: var(--hold-bg); color: var(--fg); }
+
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .list { list-style: none; padding: 0; margin: 0; }
@@ -193,8 +185,6 @@ button:disabled { opacity: .6; cursor: default; }
   text-transform: uppercase;
   letter-spacing: .04em;
 }
-
-/* --- Choose Exercise ------------------------------------------------------- */
 
 .exercise-group h2:first-child { margin-top: .5rem; }
 
@@ -210,8 +200,6 @@ button:disabled { opacity: .6; cursor: default; }
   align-items: center;
   text-align: left;
 }
-
-/* --- Set rows (Today and History) ------------------------------------------ */
 
 .set-row {
   display: flex;

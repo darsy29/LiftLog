@@ -13,18 +13,6 @@ import ChooseExercise from './pages/ChooseExercise.jsx'
 import LogSet from './pages/LogSet.jsx'
 import ExerciseHistory from './pages/ExerciseHistory.jsx'
 
-// LiftLog: a free workout log with one smart feature, double progression.
-// Log a set, and the next time you pick that exercise LiftLog tells you
-// whether to add weight or hold, based on whether you hit the top of your
-// rep range on every set last time.
-//
-// Four screens, one piece of state per screen's data, all owned here and
-// passed down as props. See docs/03-design-system.md for the states each
-// screen follows (loading, empty, error, data) and why they are kept
-// distinct rather than collapsed into one "isLoading" flag.
-
-// A free-tier API sleeps. If a request is taking a while, say so rather than
-// spinning silently, which looks broken.
 function useSlowFlag(status) {
   const [slow, setSlow] = useState(false)
   useEffect(() => {
@@ -39,21 +27,18 @@ function useSlowFlag(status) {
 }
 
 export default function App() {
-  const [view, setView] = useState('home') // home | choose | log | history
+  const [view, setView] = useState('home')
 
-  // Exercises: loaded once, reused by Choose Exercise and to look up names.
   const [exercises, setExercises] = useState([])
   const [exercisesStatus, setExercisesStatus] = useState('loading')
   const [exercisesError, setExercisesError] = useState(null)
   const exercisesSlow = useSlowFlag(exercisesStatus)
 
-  // Today's sets, for Home.
   const [today, setToday] = useState([])
   const [todayStatus, setTodayStatus] = useState('loading')
   const [todayError, setTodayError] = useState(null)
   const todaySlow = useSlowFlag(todayStatus)
 
-  // The selected exercise's sets + suggestion, for Log Set and History.
   const [selectedExerciseId, setSelectedExerciseId] = useState(null)
   const [detail, setDetail] = useState({ sets: [], suggestion: null })
   const [detailStatus, setDetailStatus] = useState('loading')

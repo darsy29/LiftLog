@@ -1,21 +1,7 @@
-// The simulated backend.
-//
-// Same function names, same return shapes, and the same shape of failure as
-// httpApi.js, so your components cannot tell the difference. Data lives in
-// the visitor's own browser and goes no further.
-//
-// This exists so the template's GitHub Pages link works on day one and so you
-// can build the interface before your API is deployed. It is NOT a finished
-// project: your real data and your real progression logic live on the server.
-
 import seed from './seed.json'
 import { suggestNextWeight } from './progression.js'
 
 const KEY = 'liftlog:data'
-
-// A real network is not instant. Keeping this delay is what forces you to
-// build a loading state now, while it is cheap, instead of discovering you
-// need one the day you switch to the real API.
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function read() {
@@ -24,14 +10,10 @@ function read() {
     try {
       return JSON.parse(stored)
     } catch {
-      // Corrupted storage. Start again rather than crashing the app.
       localStorage.removeItem(KEY)
     }
   }
 
-  // One seed row is dated "TODAY" so the Home screen's Today section always
-  // has something to show, no matter when someone opens this for the first
-  // time.
   const fresh = {
     exercises: seed.exercises,
     sets: seed.sets.map((row) =>

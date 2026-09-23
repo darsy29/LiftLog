@@ -1,6 +1,3 @@
-// One logged set, shown in Exercise History and in the Home screen's Today
-// list. `showExerciseName` is only true on Home, where sets from several
-// exercises are mixed together.
 export default function SetRow({ row, showExerciseName, onDelete }) {
   return (
     <li className="card set-row">

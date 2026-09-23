@@ -1,5 +1,3 @@
-// One muscle-group section on the Choose Exercise screen: a header and a list
-// of exercises a user can tap to log a set for.
 export default function ExerciseGroup({ muscleGroup, exercises, onSelect }) {
   return (
     <section className="exercise-group">

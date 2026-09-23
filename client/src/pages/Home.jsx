@@ -1,6 +1,5 @@
 import SetRow from '../components/SetRow.jsx'
 
-// Screen 1 of 4. Today's log at a glance, plus the way into logging a set.
 export default function Home({ status, slow, error, today, onRetry, onChoose }) {
   return (
     <div>

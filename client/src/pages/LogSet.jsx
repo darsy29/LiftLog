@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import SuggestionBanner from '../components/SuggestionBanner.jsx'
 
-// Screen 3 of 4. Shows the progression suggestion for this exercise, and a
-// short form to log a set.
 export default function LogSet({
   exercise,
   status,
@@ -17,8 +15,6 @@ export default function LogSet({
   const [weightKg, setWeightKg] = useState('')
   const [reps, setReps] = useState('')
 
-  // Pre-fill the weight field with the suggestion once it arrives, so the
-  // common case (just log what was suggested) is a single tap.
   useEffect(() => {
     if (suggestion?.suggestedWeightKg != null) {
       setWeightKg(String(suggestion.suggestedWeightKg))

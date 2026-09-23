@@ -6,8 +6,6 @@ CREATE TABLE IF NOT EXISTS exercises (
   region        TEXT        NOT NULL CHECK (region IN ('upper', 'lower'))
 );
 
--- region + exercise_type decide the progression increment (see progression.js):
--- lower + compound -> +2.5kg, everything else -> +1kg
 CREATE TABLE IF NOT EXISTS sets (
   id          SERIAL PRIMARY KEY,
   exercise_id INTEGER      NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,

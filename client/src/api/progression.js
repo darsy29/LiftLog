@@ -1,10 +1,3 @@
-// Same rule as server/progression.js, duplicated here because demo mode has
-// no server to ask. If you change one, change the other.
-//
-// Rule: if every set in your most recent session for an exercise hit the top
-// of the rep range, suggest more weight next time. Otherwise, suggest the
-// same weight.
-
 export const REP_TARGET_HIGH = 12
 
 function incrementFor(exercise) {

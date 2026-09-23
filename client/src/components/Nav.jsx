@@ -1,5 +1,3 @@
-// The "home base" every other screen can return to. Small on purpose: this
-// app has four screens, not a full site.
 export default function Nav({ view, onHome, onChoose }) {
   return (
     <nav className="nav">

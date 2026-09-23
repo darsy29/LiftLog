@@ -1,8 +1,6 @@
 import SuggestionBanner from '../components/SuggestionBanner.jsx'
 import SetRow from '../components/SetRow.jsx'
 
-// Screen 4 of 4. Every set logged for one exercise, newest first, with the
-// same suggestion shown on the Log Set screen.
 export default function ExerciseHistory({
   exercise,
   status,

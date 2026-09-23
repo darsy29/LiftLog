@@ -13,7 +13,6 @@ INSERT INTO exercises (name, muscle_group, exercise_type, region) VALUES
   ('Bicep Curl',         'Arms',      'isolation', 'upper'),
   ('Tricep Pushdown',    'Arms',      'isolation', 'upper');
 
--- Squat: two sessions, neither with every set at 12 reps -> suggestion holds.
 INSERT INTO sets (exercise_id, weight_kg, reps, logged_at)
 SELECT id, 60, reps, now() - interval '10 days'
 FROM exercises, (VALUES (10), (9), (8)) AS s(reps)
@@ -24,19 +23,16 @@ SELECT id, 60, reps, now() - interval '5 days'
 FROM exercises, (VALUES (12), (11), (10)) AS s(reps)
 WHERE name = 'Barbell Back Squat';
 
--- Bench Press: one session, all sets at 12 -> suggestion is +1kg (upper).
 INSERT INTO sets (exercise_id, weight_kg, reps, logged_at)
 SELECT id, 40, 12, now() - interval '7 days'
 FROM exercises, (VALUES (1), (2), (3)) AS s(n)
 WHERE name = 'Bench Press';
 
--- Deadlift: one session, all sets at 12 -> suggestion is +2.5kg (lower compound).
 INSERT INTO sets (exercise_id, weight_kg, reps, logged_at)
 SELECT id, 80, 12, now() - interval '3 days'
 FROM exercises, (VALUES (1), (2), (3)) AS s(n)
 WHERE name = 'Deadlift';
 
--- Bicep Curl: today, so the Home screen's Today section is never empty on a fresh seed.
 INSERT INTO sets (exercise_id, weight_kg, reps, logged_at)
 SELECT id, 10, 12, now() - interval '2 hours'
 FROM exercises WHERE name = 'Bicep Curl';

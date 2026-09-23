@@ -1,5 +1,3 @@
-// Shows the double-progression suggestion. Green when it is time to go up in
-// weight, neutral when the advice is to hold.
 export default function SuggestionBanner({ suggestion }) {
   if (!suggestion) return null
 
