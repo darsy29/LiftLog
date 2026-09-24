@@ -5,6 +5,7 @@ import { pool } from './db/pool.js'
 import * as exercisesRepo from './exercisesRepo.js'
 import * as setsRepo from './setsRepo.js'
 import { suggestNextWeight } from './progression.js'
+import { basicAuth } from './basicAuth.js'
 
 const app = express()
 
@@ -30,6 +31,8 @@ app.get('/readyz', async (request, response) => {
     response.status(503).json({ ok: false, db: 'down' })
   }
 })
+
+app.use('/api', basicAuth)
 
 app.get('/api/exercises', async (request, response, next) => {
   try {
