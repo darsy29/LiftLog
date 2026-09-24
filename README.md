@@ -3,6 +3,8 @@
 A free workout log. You write down your sets, and it tells you when to add
 weight.
 
+**Live:** https://darsy29.github.io/LiftLog/ (client) — API hosted on Render, database on Neon
+
 ## 1. Overview
 
 Most apps that do this cost money. LiftLog does not. You log an exercise,
@@ -13,6 +15,7 @@ who lifts and wants free progress tracking, no subscription.
 ## 2. Setup and installation
 
 **Install first:**
+
 - [Node.js](https://nodejs.org) version 20 or newer
 - [PostgreSQL](https://www.postgresql.org/), or [Docker](https://www.docker.com/) to run it in a container instead
 
@@ -40,6 +43,8 @@ Never commit a real `.env` file.
 | `DATABASE_URL` | `postgresql://postgres:devpassword@localhost:5432/liftlog` | Where the database is |
 | `CORS_ORIGINS` | `http://localhost:5173` | Which sites may call this API |
 | `NODE_ENV` | `development` | Set to `production` when deployed |
+| `BASIC_AUTH_USER` | `changeme` | Username required to call any `/api/*` route |
+| `BASIC_AUTH_PASS` | `change-this-to-something-long-and-random` | Password required to call any `/api/*` route |
 
 `client/.env`:
 
@@ -92,6 +97,11 @@ Set `VITE_USE_MOCK_API=false` in `client/.env` first. Open
 `http://localhost:5173`.
 
 ## 4. Features and usage
+
+The API has no user accounts, so every `/api/*` route requires HTTP Basic
+Auth (username + password), set via `BASIC_AUTH_USER` / `BASIC_AUTH_PASS`.
+`/healthz` and `/readyz` stay open for host monitoring. The browser will
+prompt for credentials the first time the app tries to reach the API.
 
 - **Home** — what you have logged today.
 - **Choose exercise** — every exercise, grouped by muscle group. Tap one to
@@ -149,8 +159,13 @@ like this:_
 - You cannot edit a logged set, only delete it and log it again.
 - The rep-range target (8 to 12) is the same for every exercise. Some lifts
   might want their own range.
-- Not deployed yet. The client is demo-mode only until the server and
-  database are hosted somewhere (see `docs/01-proposal.md`).
+- **The progression suggestion looks at every set logged on the same
+  calendar day, and only suggests more weight if all of them hit the rep
+  target.** One leftover low-rep set from earlier that day (a warm-up, or a
+  test entry) will keep it suggesting "hold," even if later sets that day
+  were fine. It is behaving as designed, but it does not yet tell warm-up
+  sets apart from work sets — a real limitation, not a crash.
 
-**Next:** deploy the server and database, turn off demo mode, and add
+**Next:** decide whether to have warm-up sets excluded from that check,
+clear the sample/seed data before final submission, and add real
 screenshots above.
