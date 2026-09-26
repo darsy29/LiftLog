@@ -5,8 +5,11 @@ import {
   listToday,
   createSet,
   deleteSet,
+  USING_MOCK_API,
 } from './api'
+import { getStoredCredentials } from './api/httpApi.js'
 import DemoNotice from './components/DemoNotice.jsx'
+import LoginGate from './components/LoginGate.jsx'
 import Nav from './components/Nav.jsx'
 import Home from './pages/Home.jsx'
 import ChooseExercise from './pages/ChooseExercise.jsx'
@@ -28,6 +31,9 @@ function useSlowFlag(status) {
 
 export default function App() {
   const [view, setView] = useState('home')
+
+  const [needsLogin, setNeedsLogin] = useState(!USING_MOCK_API && !getStoredCredentials())
+  const [loginAttempted, setLoginAttempted] = useState(false)
 
   const [exercises, setExercises] = useState([])
   const [exercisesStatus, setExercisesStatus] = useState('loading')
@@ -54,6 +60,7 @@ export default function App() {
       setExercises(await listExercises())
       setExercisesStatus('ready')
     } catch (caught) {
+      if (caught.status === 401) return setNeedsLogin(true)
       setExercisesError(caught)
       setExercisesStatus('error')
     }
@@ -66,6 +73,7 @@ export default function App() {
       setToday(await listToday())
       setTodayStatus('ready')
     } catch (caught) {
+      if (caught.status === 401) return setNeedsLogin(true)
       setTodayError(caught)
       setTodayStatus('error')
     }
@@ -78,15 +86,22 @@ export default function App() {
       setDetail(await listSetsForExercise(exerciseId))
       setDetailStatus('ready')
     } catch (caught) {
+      if (caught.status === 401) return setNeedsLogin(true)
       setDetailError(caught)
       setDetailStatus('error')
     }
   }
 
   useEffect(() => {
+    if (needsLogin) return
     loadExercises()
     loadToday()
-  }, [])
+  }, [needsLogin])
+
+  function handleLoginSubmit() {
+    setLoginAttempted(true)
+    setNeedsLogin(false)
+  }
 
   function goHome() {
     setView('home')
@@ -117,7 +132,11 @@ export default function App() {
       await createSet({ exerciseId: selectedExerciseId, weightKg, reps })
       await loadDetail(selectedExerciseId)
     } catch (caught) {
-      setDetailError(caught)
+      if (caught.status === 401) {
+        setNeedsLogin(true)
+      } else {
+        setDetailError(caught)
+      }
     } finally {
       setSaving(false)
     }
@@ -128,8 +147,21 @@ export default function App() {
       await deleteSet(id)
       await loadDetail(selectedExerciseId)
     } catch (caught) {
-      setDetailError(caught)
+      if (caught.status === 401) {
+        setNeedsLogin(true)
+      } else {
+        setDetailError(caught)
+      }
     }
+  }
+
+  if (needsLogin) {
+    return (
+      <LoginGate
+        error={loginAttempted ? 'Incorrect username or password.' : null}
+        onSubmit={handleLoginSubmit}
+      />
+    )
   }
 
   const selectedExercise = exercises.find(
