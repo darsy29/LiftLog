@@ -1,10 +1,34 @@
 const BASE = import.meta.env.VITE_API_BASE_URL || ''
+const AUTH_KEY = 'liftlog:auth'
+
+export function getStoredCredentials() {
+  const raw = sessionStorage.getItem(AUTH_KEY)
+  return raw ? JSON.parse(raw) : null
+}
+
+export function setStoredCredentials(username, password) {
+  sessionStorage.setItem(AUTH_KEY, JSON.stringify({ username, password }))
+}
+
+export function clearStoredCredentials() {
+  sessionStorage.removeItem(AUTH_KEY)
+}
 
 async function request(path, options) {
-  const response = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  })
+  const credentials = getStoredCredentials()
+  const headers = { 'Content-Type': 'application/json' }
+  if (credentials) {
+    headers.Authorization = 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+  }
+
+  const response = await fetch(`${BASE}${path}`, { headers, ...options })
+
+  if (response.status === 401) {
+    clearStoredCredentials()
+    const error = new Error('Authentication required')
+    error.status = 401
+    throw error
+  }
 
   if (!response.ok) {
     let message = `${response.status} ${response.statusText}`
