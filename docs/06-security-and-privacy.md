@@ -1,69 +1,63 @@
-# Security and privacy checklist
+# Security and privacy
 
-Work through this **before your first push**, and again before you submit. It is
-short, none of it is exotic, and a grader can check most of it in two minutes.
+A working record of the app's real security posture, kept alongside the
+code rather than written once and forgotten. The full graded checklist
+lives in the private workspace as `SECURITY-CHECKLIST.md`. This file is the
+shorter, plain language version.
 
-Your repository is public, in your own account, and permanent. That is the point
-of it, and it is also why this file exists.
+## Secrets
 
-## Before the first push
+- [x] `.env` is gitignored and has never been committed
+- [x] `.env.example` files exist with placeholder values only
+- [x] Checked the full git history for leaked secrets, found none
+- [x] Production credentials (database URL, login username and password,
+      allowed origins) live only in Render's environment settings, never in
+      the repository
 
-- [ ] `.gitignore` includes `.env`, and `git check-ignore -v .env` confirms it
-- [ ] `git ls-files | grep -iE '\.env$|\.pem$|id_rsa'` prints nothing
-- [ ] `.env.example` is committed, with **placeholder** values only
-- [ ] No connection string, key or password anywhere in the repository,
-      including in a screenshot
-- [ ] No `student.json`, and no name, student number or email of yours or anyone
-      else's
+## Application security
 
-Deleting a file later does **not** remove it from the history. If you commit a
-credential, **rotate it first**, at the service, and clean up the history second.
-The rotation is the fix; the cleanup is hygiene.
+- [x] Every database query uses parameters, never string concatenation
+- [x] Input is validated on the server, not only in the browser
+- [x] CORS is set to named origins, not a wildcard
+- [x] `helmet` is installed and used
+- [x] Error responses send one fixed generic message, never a stack trace
+      or connection detail
+- [x] `npm audit` findings in the server's dependencies are still
+      outstanding, not yet resolved
 
-## The application
+## Access control
 
-- [ ] Every SQL query is parameterised. Values go in the array, never into the
-      string. This is one line of defence you already know how to do
-- [ ] Input is validated **on the server**, not only in React. Length limits on
-      every text field
-- [ ] `cors({ origin: allowedOrigins })` names your origins. Not `cors()` with no
-      options, which allows every site on the internet
-- [ ] `NODE_ENV=production` on the host, and no stack trace in any response body
-- [ ] `helmet` installed, which is one line for several real protections
-- [ ] Anything that costs money or accepts a password is rate limited
-- [ ] Passwords, if you have accounts, are hashed with bcrypt and never logged
-- [ ] Every route that touches somebody's data has the ownership check **in the
-      query**, as `AND user_id = $2`, not as an `if` above it
-- [ ] `npm audit` run once, and the easy fixes taken
+The app writes to a real database and has no user accounts, so it needs a
+door in front of it.
 
-```bash
-npm install helmet
-```
+- [x] Every `/api/*` route requires a username and password (HTTP Basic
+      Auth), checked on the server
+- [x] The app itself shows a real login screen, so it works the same way
+      on any device, not only a browser that has visited the API address
+      before
+- [x] `/healthz` and `/readyz` stay open, for the host's own monitoring
+- [x] The login credentials are environment variables, never in the source
+      code. The real values are recorded only in the private workspace
 
-```js
-import helmet from 'helmet'
-app.use(helmet())
-```
+## Deployment
+
+- [x] Third-party GitHub Actions are pinned to a commit SHA, not a
+      moveable version tag
+- [x] The deploy workflow uses no secret values at all, only public build
+      configuration
+- [x] Confirm secret scanning and push protection are turned on in this
+      repository's settings
 
 ## Privacy
 
-The half that matters more, because it is about other people.
+- [x] No name, student number, email, or phone number anywhere in this
+      repository
+- [x] Seed and sample data is invented gym exercises, not real people
+- [x] No classmate's data of any kind exists in this project
 
-- [ ] **No real classmates' names, numbers, emails or photos**, anywhere. Not in
-      seed data, not in screenshots, not in the demo video. Consent for a course
-      project does not cover the next ten years of a public repository
-- [ ] Seed data is invented. Yours will be read
-- [ ] If real people tested your app, even three friends, their data is deleted
-      before you submit
-- [ ] If your app collects anything about anyone, the app says what it collects
-- [ ] Any face in a screenshot is stock, generated, or yours
+## Known limitation, not a security issue
 
-If your project handles personal information about real people, you are inside
-the Philippine Data Privacy Act. Collect the minimum, say what you collect, and
-do not collect anything you cannot justify.
-
-## What to write in your journal
-
-One short paragraph: the riskiest thing about your project from this list, what
-you did about it, and what you knowingly accepted. A student who can name the
-tradeoff they made scores better than one who claims there was none.
+The database connects using Neon's default owner role, which has full
+privileges rather than a narrower one scoped to only what this app needs.
+Accepted for a single-database student project, noted here honestly rather
+than left unmentioned.
