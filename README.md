@@ -3,6 +3,8 @@
 A free workout log. You write down your sets, and it tells you when to add
 weight.
 
+Built with Claude as an AI pair-programmer throughout.
+
 **Live:** https://darsy29.github.io/LiftLog/ (client) — API hosted on Render, database on Neon
 
 ## 1. Overview
@@ -53,24 +55,22 @@ Never commit a real `.env` file.
 | `VITE_USE_MOCK_API` | `false` | `false` = talk to the real server. Unset or anything else = demo mode (no server needed) |
 | `VITE_API_BASE_URL` | `http://localhost:3000` | Where the server is, only needed when not using the mock |
 
-**Set up the database.** With Docker:
+**Set up the database.** With Docker, from the repository root:
 
 ```bash
 docker compose up -d
 ```
 
-Then, from `server/`:
+This starts Postgres and builds the tables automatically. Then, from
+`server/`, load sample data:
 
 ```bash
 npm run db:reset
 ```
 
-This builds the tables and adds sample exercises and sets so the app is not
-empty on first run.
-
 ## 3. How to run it
 
-**Demo mode** (no database, no server — just the interface):
+**Demo mode** (no database, no server — just the interface, fake local data):
 
 ```bash
 cd client
@@ -79,7 +79,7 @@ npm run dev
 ```
 
 Open `http://localhost:5173`. You should see the Home screen with a demo set
-already logged for today.
+already logged for today, and a "Demo mode" notice at the top.
 
 **Full app** (real database, two terminals):
 
@@ -94,14 +94,15 @@ npm run dev
 ```
 
 Set `VITE_USE_MOCK_API=false` in `client/.env` first. Open
-`http://localhost:5173`.
+`http://localhost:5173` — it will show a login screen (see Features below)
+before anything else, since the API requires a username and password.
 
 ## 4. Features and usage
 
-The API has no user accounts, so every `/api/*` route requires HTTP Basic
-Auth (username + password), set via `BASIC_AUTH_USER` / `BASIC_AUTH_PASS`.
-`/healthz` and `/readyz` stay open for host monitoring. The browser will
-prompt for credentials the first time the app tries to reach the API.
+The API has no user accounts, so every `/api/*` route requires a username and
+password (`BASIC_AUTH_USER` / `BASIC_AUTH_PASS`). The app itself shows a login
+screen the first time it needs one, and remembers it for the rest of that
+browser session. `/healthz` and `/readyz` stay open, for host monitoring.
 
 - **Home** — what you have logged today.
 - **Choose exercise** — every exercise, grouped by muscle group. Tap one to
@@ -125,37 +126,40 @@ prompt for credentials the first time the app tries to reach the API.
 | POST | `/api/sets` | Log a new set — body: `{ exerciseId, weightKg, reps }` |
 | DELETE | `/api/sets/:id` | Remove a set |
 
+Every route above except the first two requires the username and password.
+
 ## 5. Project structure
 
 ```
 client/               React app (Vite)
   src/api/            Talks to the server, or fakes it (demo mode)
-  src/components/     Small reused pieces (nav, a set row, the suggestion banner)
+  src/components/     Small reused pieces (nav, login screen, suggestion banner)
   src/pages/          The four screens: Home, ChooseExercise, LogSet, ExerciseHistory
 server/               Express API
   server.js           Routes
+  basicAuth.js         The login check in front of every /api/* route
   exercisesRepo.js     Database queries for exercises
   setsRepo.js          Database queries for sets
   progression.js       The weight-suggestion rule
   db/                  schema.sql, seed.sql, and the runner script
 docs/                 Planning docs and weekly reports
 compose.yml           Runs Postgres in a container for local dev
+AI-USAGE.md           Where and how AI was used to build this
 ```
 
 ## 6. Screenshots
 
-_TODO: add one screenshot per screen (Home, Choose Exercise, Log Set,
-Exercise History). Save them in `docs/screenshots/` and reference them below,
-like this:_
+![home](docs/screenshots/s1.PNG)
+![choose_exercise](docs/screenshots/s2.PNG)
+![chosen_exercise](docs/screenshots/s3.PNG)
+![history_exercise](docs/screenshots/s4.PNG)
+![updated_home](docs/screenshots/s5.PNG)
 
-```markdown
-![Home screen](docs/screenshots/home.png)
-```
 
 ## 7. Known issues and next steps
 
-- No login. Everyone who opens the app sees the same data — fine for one
-  person's own workouts, not for sharing the app with others yet.
+- No login *accounts* — one shared username/password gates the whole API,
+  fine for a single grader, not a real multi-user login system.
 - You cannot edit a logged set, only delete it and log it again.
 - The rep-range target (8 to 12) is the same for every exercise. Some lifts
   might want their own range.
@@ -164,8 +168,6 @@ like this:_
   target.** One leftover low-rep set from earlier that day (a warm-up, or a
   test entry) will keep it suggesting "hold," even if later sets that day
   were fine. It is behaving as designed, but it does not yet tell warm-up
-  sets apart from work sets — a real limitation, not a crash.
-
-**Next:** decide whether to have warm-up sets excluded from that check,
-clear the sample/seed data before final submission, and add real
-screenshots above.
+  sets apart from work sets, a limitation.
+- A handful of moderate-severity `npm audit` findings in `server/`'s
+  dependencies, not yet resolved.
