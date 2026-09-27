@@ -19,6 +19,9 @@ How a user moves through the four core screens.
 
 Save always returns to Home.
 
+### Visual Screen Flow
+![screen_flow](screenshots/Screenflow.PNG)
+
 ## Home screen
 
 The same simple layout, optimized for every screen.
