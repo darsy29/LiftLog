@@ -107,17 +107,17 @@ screens. `src/components` folder.
 Real screenshots are in `screenshots/` in this folder:
 
 ### Home
-![Home screen](screenshots/s5.png)
+![Home screen](screenshots/s5.PNG)
 
 ### Choose Exercise
-![Choose Exercise screen](screenshots/s2.png)
+![Choose Exercise screen](screenshots/s2.PNG)
 
 ### Log Set
-![Log Set screen, with a suggestion shown](screenshots/s3.png)
+![Log Set screen, with a suggestion shown](screenshots/s3.PNG)
 
 ### Exercise History
-![Exercise History screen](screenshots/s4.png)
+![Exercise History screen](screenshots/s4.PNG)
 
 ### Empty state
-![An empty state, nothing logged yet](screenshots/s1.png)
+![An empty state, nothing logged yet](screenshots/s1.PNG)
 
