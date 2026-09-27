@@ -26,71 +26,25 @@ Save always returns to Home.
 
 The same simple layout, optimized for every screen.
 
-```
-LiftLog
-
-Today
-Bench Press, 60kg x8, x8         [+]
-
-All exercises
-Squat, last 80kg x10
-Deadlift, last 100kg x6
-
-[+ Add exercise]
-```
+![mock1](screenshots/m1.PNG)
 
 ## Choose Exercise screen
 
 Browse and search exercises by muscle group.
 
-```
-<-  Choose exercise
-
-[Search exercises]
-
-Chest
-Bench Press
-Chest Fly
-
-Back
-Deadlift
-Barbell Row
-
-Legs
-Squat
-
-(scrolls for more groups)
-```
+![mock2](screenshots/m2.PNG)
 
 ## Log Set screen
 
 Record a single set with all key details.
 
-```
-<-  Log Set
-
-Exercise: Bench Press
-Weight (number)
-Reps (number)
-Date (default to today)
-
-[Save Set]
-```
+![mock3](screenshots/m3.PNG)
 
 ## Exercise History screen
 
 A clear view of past sets and what to try next.
 
-```
-<-  Bench Press
-
-Try 62.5kg next
-
-Aug 20 - 60kg x 8
-Aug 13 - 60kg x 6
-
-[+ Log new set]
-```
+![mock4](screenshots/m4.PNG)
 
 ## Component breakdown
 
