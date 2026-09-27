@@ -1,33 +1,58 @@
 # Design system
 
-The rules your interface follows, written down, so that screen four looks like
-screen one.
+Styling approach: CSS Modules, plain CSS files scoped per component, tokens
+set once in a global `:root`.
 
-**Part of this is a visual document**, submitted as a PDF or images. Swatches,
-type samples and component states, not paragraphs describing them.
+## Colors
 
-## What to record
+| Token | Hex | Role |
+| --- | --- | --- |
+| color-bg | #121212 | Page background |
+| color-surface | #1E1E1E | Cards, panels |
+| color-primary | #34D399 | Buttons and the one accent |
+| color-text | #F5F5F5 | Body text |
+| color-text-muted | #9A9A9A | Captions, hints |
 
-**Colour.** Every colour, with its hex value and the name you use for it in code.
-Check text against its background for contrast; the WCAG minimum is 4.5 to 1 for
-normal text, and it is checked.
+## Contrast check (WCAG AA, 4.5:1 minimum)
 
-**Type.** The family, and the sizes you actually use, each with a name. Three or
-four sizes is plenty.
+- Text #F5F5F5 on background #121212 -> 17.2:1, Pass
+- Muted text #9A9A9A on background #121212 -> 6.7:1, Pass
+- Muted text #9A9A9A on surface #1E1E1E -> 5.9:1, Pass
+- Dark text #06281C on accent #34D399 (buttons) -> 8.2:1, Pass
 
-**Spacing.** One scale, and stick to it. Numbers chosen at random per component
-is the single most common reason a student project looks unfinished.
+## Type scale
 
-**Components.** For each reusable piece: what it looks like normally, on hover,
-focused, disabled, and while loading. **Focus states are not optional**: removing
-an outline without replacing it makes your app unusable with a keyboard.
+- Heading, 20px Bold, screen titles and big numbers. Example: "Bench Press"
+- Body, 14px Regular, content and list rows. Example: "60kg x 8 reps"
+- Small, 11px Regular, captions and hints. Example: "last: 60kg x 8"
 
-**States.** Loading, empty, error and data are four different screens. Decide what
-each looks like once, here, rather than improvising per page.
+## Spacing, base unit 8px
 
-## In code
+- Tight, 8px, between related items
+- Standard, 16px, between sections
+- Screen edge, 24px, page padding
 
-Say where these live: CSS custom properties, a Tailwind config, a theme object, a
-component library you configured. The template starts with custom properties in
-`client/src/styles.css`. Module 3 covered the alternatives; use the one you can
-defend.
+## Reusable components
+
+From the wireframe component.
+
+| Component | Level | Used on | Props |
+| --- | --- | --- | --- |
+| Button | atom | appears on every screen | variant, onClick, children |
+| ListRow | molecule | Home, Choose Exercise, Exercise History | title, subtitle, onClick, showAddButton |
+| Header | organism | every screen | title, showBack |
+| Input | atom | Log Set, Choose Exercise search | value, onChange, placeholder |
+| SuggestionBox | molecule | Exercise History | label, value, note |
+
+## Responsive plan
+
+Below 600px (phone): single column, full width, 16-24px edge padding.
+
+## Note on drift since this was approved
+
+The finished app ended up on a lighter default theme (with a dark mode
+variant) and a teal accent close in spirit to the #34D399 here, rather than
+this exact dark palette. The tokens, contrast checking, and 8px spacing
+scale above are what the app was built to follow, and the component list
+matches what actually shipped. Recording the change here rather than
+editing the numbers above, since this file is the original approved plan.
