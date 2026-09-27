@@ -1,9 +1,12 @@
 # LiftLog
 
+[![Made with AI](https://img.shields.io/badge/Made_with-AI_assistance-blue)](AI-USAGE.md)
+
 A free workout log. You write down your sets, and it tells you when to add
 weight.
 
-Built with Claude as an AI pair-programmer throughout.
+Built with Claude as an AI pair-programmer throughout — see
+[`AI-USAGE.md`](AI-USAGE.md) for exactly where and how.
 
 **Live:** https://darsy29.github.io/LiftLog/ (client) — API hosted on Render, database on Neon
 
