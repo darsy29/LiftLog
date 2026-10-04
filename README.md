@@ -5,10 +5,10 @@
 A free workout log. You write down your sets, and it tells you when to add
 weight.
 
-Built with Claude as an AI pair-programmer throughout — see
+Built with Claude as an AI pair-programmer throughout. See
 [`AI-USAGE.md`](AI-USAGE.md) for exactly where and how.
 
-**Live:** https://darsy29.github.io/LiftLog/ (client) — API hosted on Render, database on Neon
+**Live:** https://darsy29.github.io/LiftLog/ (client). API hosted on Render, database on Neon.
 
 ## 1. Overview
 
@@ -22,7 +22,7 @@ who lifts and wants free progress tracking, no subscription.
 **Install first:**
 
 - [Node.js](https://nodejs.org) version 20 or newer
-- [PostgreSQL](https://www.postgresql.org/), or [Docker](https://www.docker.com/) to run it in a container instead
+- [PostgreSQL](https://www.postgresql.org/), installed locally, or a free hosted database such as [Neon](https://neon.tech)
 
 **Get the code:**
 
@@ -58,22 +58,28 @@ Never commit a real `.env` file.
 | `VITE_USE_MOCK_API` | `false` | `false` = talk to the real server. Unset or anything else = demo mode (no server needed) |
 | `VITE_API_BASE_URL` | `http://localhost:3000` | Where the server is, only needed when not using the mock |
 
-**Set up the database.** With Docker, from the repository root:
-
-```bash
-docker compose up -d
-```
-
-This starts Postgres and builds the tables automatically. Then, from
-`server/`, load sample data:
+**Set up the database.** Create an empty PostgreSQL database named `liftlog`
+(locally, or on Neon) and put its connection string in `server/.env` as
+`DATABASE_URL`. Then, from `server/`, create the tables and load the sample
+data:
 
 ```bash
 npm run db:reset
 ```
 
+This wipes and re-seeds the tables, so never point it at a database that
+holds data you want to keep.
+
+`compose.yml` is a Docker Compose file from the class template. It is not
+used in the steps above and has not been updated for the login, so skip it.
+
 ## 3. How to run it
 
-**Demo mode** (no database, no server — just the interface, fake local data):
+**Live app** (nothing to install): open https://darsy29.github.io/LiftLog/
+and log in with the grader login that was shared with the instructor in the course workspace. The first load can
+take up to a minute if the free hosting has been idle.
+
+**Demo mode** (no database, no server, just the interface with fake local data):
 
 ```bash
 cd client
@@ -97,8 +103,9 @@ npm run dev
 ```
 
 Set `VITE_USE_MOCK_API=false` in `client/.env` first. Open
-`http://localhost:5173` — it will show a login screen (see Features below)
-before anything else, since the API requires a username and password.
+`http://localhost:5173`. It will show a login screen first. Log in with the
+`BASIC_AUTH_USER` and `BASIC_AUTH_PASS` you set in `server/.env`, and you
+should land on the Home screen.
 
 ## 4. Features and usage
 
@@ -107,13 +114,13 @@ password (`BASIC_AUTH_USER` / `BASIC_AUTH_PASS`). The app itself shows a login
 screen the first time it needs one, and remembers it for the rest of that
 browser session. `/healthz` and `/readyz` stay open, for host monitoring.
 
-- **Home** — what you have logged today.
-- **Choose exercise** — every exercise, grouped by muscle group. Tap one to
+- **Home**: what you have logged today.
+- **Choose exercise**: every exercise, grouped by muscle group. Tap one to
   log a set for it.
-- **Log set** — enter weight and reps. Shows the suggestion for this exercise:
+- **Log set**: enter weight and reps. Shows the suggestion for this exercise:
   add weight if you hit the top of your rep range on every set last time,
   otherwise hold.
-- **Exercise history** — every past set for one exercise, newest first. You
+- **Exercise history**: every past set for one exercise, newest first. You
   can delete a set logged by mistake.
 
 **API (server, when not in demo mode):**
@@ -126,7 +133,7 @@ browser session. `/healthz` and `/readyz` stay open, for host monitoring.
 | GET | `/api/exercises/:id` | One exercise |
 | GET | `/api/exercises/:id/sets` | That exercise's sets, plus the weight suggestion |
 | GET | `/api/sets/today` | Every set logged today, across all exercises |
-| POST | `/api/sets` | Log a new set — body: `{ exerciseId, weightKg, reps }` |
+| POST | `/api/sets` | Log a new set. Body: `{ exerciseId, weightKg, reps }` |
 | DELETE | `/api/sets/:id` | Remove a set |
 
 Every route above except the first two requires the username and password.
@@ -140,13 +147,13 @@ client/               React app (Vite)
   src/pages/          The four screens: Home, ChooseExercise, LogSet, ExerciseHistory
 server/               Express API
   server.js           Routes
-  basicAuth.js         The login check in front of every /api/* route
-  exercisesRepo.js     Database queries for exercises
-  setsRepo.js          Database queries for sets
-  progression.js       The weight-suggestion rule
-  db/                  schema.sql, seed.sql, and the runner script
+  basicAuth.js        The login check in front of every /api/* route
+  exercisesRepo.js    Database queries for exercises
+  setsRepo.js         Database queries for sets
+  progression.js      The weight-suggestion rule
+  db/                 schema.sql, seed.sql, and the runner script
 docs/                 Planning docs and weekly reports
-compose.yml           Runs Postgres in a container for local dev
+compose.yml           Docker Compose file from the class template (not used above)
 AI-USAGE.md           Where and how AI was used to build this
 ```
 
@@ -161,7 +168,7 @@ AI-USAGE.md           Where and how AI was used to build this
 
 ## 7. Known issues and next steps
 
-- No login *accounts* — one shared username/password gates the whole API,
+- No login *accounts*. One shared username and password gates the whole API,
   fine for a single grader, not a real multi-user login system.
 - You cannot edit a logged set, only delete it and log it again.
 - The rep-range target (8 to 12) is the same for every exercise. Some lifts
@@ -172,5 +179,5 @@ AI-USAGE.md           Where and how AI was used to build this
   test entry) will keep it suggesting "hold," even if later sets that day
   were fine. It is behaving as designed, but it does not yet tell warm-up
   sets apart from work sets, a limitation.
-- A handful of moderate-severity `npm audit` findings in `server/`'s
-  dependencies, not yet resolved.
+- `compose.yml` (Docker Compose) has not been updated for the login, so it is
+  not part of the documented setup.
